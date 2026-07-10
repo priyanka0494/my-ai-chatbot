@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react"
-import "./App.css"
 
 function App() {
 	const [message, setMessage] = useState("")
@@ -11,7 +10,7 @@ function App() {
 	}, [])
 
 	return (
-		<div className="App">
+		<div className="font-bold p-4 text-3xl text-center">
 			<h1>{message}</h1>
 		</div>
 	)
