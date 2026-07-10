@@ -1,4 +1,4 @@
-# my-app
+# my-ai-chatbot
 
 To install dependencies:
 
