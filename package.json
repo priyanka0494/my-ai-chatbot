@@ -1,5 +1,5 @@
 {
-  "name": "my-app",
+  "name": "my-ai-chatbot",
   "module": "index.ts",
   "type": "module",
   "private": true,
