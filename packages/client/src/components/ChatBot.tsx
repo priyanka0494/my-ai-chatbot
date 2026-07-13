@@ -20,21 +20,21 @@ type Message = {
 
 const ChatBot = () => {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [isBotTypipng, setIsBotTyping] = useState(false);
+  const [isBotTyping, setIsBotTyping] = useState(false);
   const conversationId = useMemo(() => crypto.randomUUID(), []);
-  const formRef = useRef<HTMLFormElement | null>(null);
+  const lastMessageRef = useRef<HTMLDivElement | null>(null);
   const { register, handleSubmit, reset, formState } = useForm<FormData>();
 
   useEffect(() => {
-    if (formRef.current) {
-      formRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (lastMessageRef.current) {
+      lastMessageRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
 
   const onSubmit = async ({ prompt }: FormData) => {
     setMessages((prev) => [...prev, { content: prompt, role: "user" }]);
     setIsBotTyping(true);
-    reset();
+    reset({ prompt: "" });
     const { data } = await axios.post<ChatResponse>("/api/chat", {
       prompt,
       conversationId,
@@ -52,17 +52,18 @@ const ChatBot = () => {
   };
 
   return (
-    <div className="mt-5">
-      <div className="flex flex-col gap-3 mb-10">
+    <div className="flex flex-col h-full">
+      <div className="flex flex-col flex-1 gap-3 mb-10 overflow-y-auto">
         {messages.map((message, index) => (
-          <p
+          <div
             key={index}
+            ref={index === messages.length - 1 ? lastMessageRef : null}
             className={`px-3 py-1 rounded-xl ${message.role === "user" ? "bg-blue-600 text-white self-end" : "bg-gray-100 text-black self-start"}`}
           >
             <ReactMarkdown>{message.content}</ReactMarkdown>
-          </p>
+          </div>
         ))}
-        {isBotTypipng && (
+        {isBotTyping && (
           <div
             className={"flex self-start gap-1 px-3 py-3 bg-gray-200 rounded-xl"}
           >
@@ -73,18 +74,17 @@ const ChatBot = () => {
         )}
       </div>
       <form
-        className="flex flex-col gap-2 p-4 items-end border-2 rounded-3xl"
+        className="flex  gap-2 p-4 items-end border-2 rounded-3xl"
         onSubmit={handleSubmit(onSubmit)}
         onKeyDown={handleKeyDown}
-        ref={formRef}
       >
         <textarea
           className="w-full focus:outline-0"
           placeholder="Ask me anything..."
+          autoFocus
           {...register("prompt", {
             required: true,
-            validate: (value) =>
-              value.trim() !== "" || "Prompt cannot be empty",
+            validate: (value) => value.trim() !== "",
           })}
         />
         <Button
