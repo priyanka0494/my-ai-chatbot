@@ -22,6 +22,7 @@ const ChatInput = ({ onSubmit }: Props) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSubmit(onSubmit)();
+      reset({ prompt: "" });
     }
   };
   return (
